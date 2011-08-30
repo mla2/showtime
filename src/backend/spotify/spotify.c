@@ -618,7 +618,7 @@ spotify_try_login(sp_session *s, int retry, const char *reason, int silent)
 
   TRACE(TRACE_INFO, "Spotify", "Logging in as user %s", username);
 
-  f_sp_session_login(s, username, password);
+  f_sp_session_login(s, username, password, 0);
   pending_login = 1;
 
   free(username);
@@ -916,7 +916,7 @@ dispatch_action(track_action_ctrl_t *tac, const char *action)
 {
   if(!strcmp(action, "starToggle")) {
     int on = f_sp_track_is_starred(spotify_session, tac->t);
-    f_sp_track_set_starred(spotify_session, (const sp_track **)&tac->t, 1, !on);
+    f_sp_track_set_starred(spotify_session, (sp_track * const *)&tac->t, 1, !on);
     prop_set_int(tac->prop_star, !on);
   } else {
     TRACE(TRACE_DEBUG, "Spotify", "Unknown action '%s' on track", action);
@@ -3356,8 +3356,8 @@ spotify_thread(void *aux)
 
   TRACE(TRACE_DEBUG, "spotify", "Cache location: %s", sesconf.cache_location);
 
-  sesconf.application_key = appkey;
-  sesconf.application_key_size = sizeof(appkey);
+  sesconf.application_key = g_appkey;
+  sesconf.application_key_size = g_appkey_size;
   sesconf.user_agent = "Showtime";
   sesconf.callbacks = &spotify_session_callbacks;
   
